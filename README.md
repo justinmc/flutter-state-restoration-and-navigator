@@ -1,16 +1,6 @@
-# state_restoration_navigator
+# Flutter - State Restoration and Navigator 2.0 Example
 
 A new Flutter project.
+This repository is an attempt at demonstrating an app that uses Navigator 2.0 for its routing and state restoration to restore those routes.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+It is based off of [John Ryan's Navigator 2.0 article](https://medium.com/flutter/learning-flutters-new-navigation-and-routing-system-7c9068155ade).
