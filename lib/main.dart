@@ -35,11 +35,11 @@ class BookRouteInformationParser extends RouteInformationParser<BookRoutePath> {
   @override
   Future<BookRoutePath> parseRouteInformation(
       RouteInformation routeInformation) async {
-    final uri = Uri.parse(routeInformation.location);
+    final uri = Uri.parse(routeInformation.location!);
 
     if (uri.pathSegments.length >= 2) {
       var remaining = uri.pathSegments[1];
-      return BookRoutePath.details(int.tryParse(remaining));
+      return BookRoutePath.details(int.tryParse(remaining)!);
     } else {
       return BookRoutePath.home();
     }
@@ -53,7 +53,7 @@ class BookRouteInformationParser extends RouteInformationParser<BookRoutePath> {
     if (path.isDetailsPage) {
       return RouteInformation(location: '/book/${path.id}');
     }
-    return null;
+    return RouteInformation(location: '/404');
   }
 }
 
@@ -61,7 +61,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<BookRoutePath> {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  Book _selectedBook;
+  Book? _selectedBook;
 
   List<Book> books = [
     Book('Stranger in a Strange Land', 'Robert A. Heinlein'),
@@ -73,7 +73,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
 
   BookRoutePath get currentConfiguration => _selectedBook == null
       ? BookRoutePath.home()
-      : BookRoutePath.details(books.indexOf(_selectedBook));
+      : BookRoutePath.details(books.indexOf(_selectedBook!));
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
             onTapped: _handleBookTapped,
           ),
         ),
-        if (_selectedBook != null) BookDetailsPage(book: _selectedBook)
+        if (_selectedBook != null) BookDetailsPage(book: _selectedBook!)
       ],
       onPopPage: (route, result) {
         if (!route.didPop(result)) {
@@ -107,7 +107,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
   @override
   Future<void> setNewRoutePath(BookRoutePath path) async {
     if (path.isDetailsPage) {
-      _selectedBook = books[path.id];
+      _selectedBook = books[path.id!];
     }
   }
 
@@ -121,7 +121,7 @@ class BookDetailsPage extends Page {
   final Book book;
 
   BookDetailsPage({
-    this.book,
+    required this.book,
   }) : super(key: ValueKey(book));
 
   Route createRoute(BuildContext context) {
@@ -135,7 +135,7 @@ class BookDetailsPage extends Page {
 }
 
 class BookRoutePath {
-  final int id;
+  final int? id;
 
   BookRoutePath.home() : id = null;
 
@@ -151,8 +151,8 @@ class BooksListScreen extends StatelessWidget {
   final ValueChanged<Book> onTapped;
 
   BooksListScreen({
-    @required this.books,
-    @required this.onTapped,
+    required this.books,
+    required this.onTapped,
   });
 
   @override
@@ -174,10 +174,10 @@ class BooksListScreen extends StatelessWidget {
 }
 
 class BookDetailsScreen extends StatelessWidget {
-  final Book book;
+  final Book? book;
 
   BookDetailsScreen({
-    @required this.book,
+    required this.book,
   });
 
   @override
@@ -190,8 +190,8 @@ class BookDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (book != null) ...[
-              Text(book.title, style: Theme.of(context).textTheme.headline6),
-              Text(book.author, style: Theme.of(context).textTheme.subtitle1),
+              Text(book!.title, style: Theme.of(context).textTheme.headline6),
+              Text(book!.author, style: Theme.of(context).textTheme.subtitle1),
             ],
           ],
         ),
@@ -203,10 +203,10 @@ class BookDetailsScreen extends StatelessWidget {
 class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
   @override
   Iterable<RouteTransitionRecord> resolve({
-    List<RouteTransitionRecord> newPageRouteHistory,
-    Map<RouteTransitionRecord, RouteTransitionRecord>
+    required List<RouteTransitionRecord> newPageRouteHistory,
+    required Map<RouteTransitionRecord?, RouteTransitionRecord>
         locationToExitingPageRoute,
-    Map<RouteTransitionRecord, List<RouteTransitionRecord>>
+    required Map<RouteTransitionRecord?, List<RouteTransitionRecord>>
         pageRouteToPagelessRoutes,
   }) {
     final results = <RouteTransitionRecord>[];
