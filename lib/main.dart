@@ -27,6 +27,7 @@ class _BooksAppState extends State<BooksApp> {
       title: 'Books App',
       routerDelegate: _routerDelegate,
       routeInformationParser: _routeInformationParser,
+      restorationScopeId: 'root',
     );
   }
 }
@@ -79,6 +80,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
   Widget build(BuildContext context) {
     return Navigator(
       key: navigatorKey,
+      restorationScopeId: 'navigator',
       transitionDelegate: NoAnimationTransitionDelegate(),
       pages: [
         MaterialPage(
