@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(BooksApp());
+  runApp(RootRestorationScope(
+    child: BooksApp(),
+    restorationId: 'root',
+  ));
 }
 
 class Book {
@@ -16,18 +19,26 @@ class BooksApp extends StatefulWidget {
   State<StatefulWidget> createState() => _BooksAppState();
 }
 
-class _BooksAppState extends State<BooksApp> {
-  BookRouterDelegate _routerDelegate = BookRouterDelegate();
+class _BooksAppState extends State<BooksApp> with RestorationMixin {
+  RestorableBookDelegate _routerDelegate = RestorableBookDelegate();
   BookRouteInformationParser _routeInformationParser =
       BookRouteInformationParser();
+
+  @override
+  String? get restorationId => 'app';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_routerDelegate, 'delegate');
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Books App',
-      routerDelegate: _routerDelegate,
+      routerDelegate: _routerDelegate.value,
       routeInformationParser: _routeInformationParser,
-      restorationScopeId: 'root',
+      restorationScopeId: 'materialapp',
     );
   }
 }
@@ -64,13 +75,19 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
 
   Book? _selectedBook;
 
-  List<Book> books = [
+  // TODO: Instead of translating everywhere between id and Book just store it internally as id?
+  int? get selectedBook =>
+      _selectedBook != null ? books.indexOf(_selectedBook!) : null;
+
+  static List<Book> books = [
     Book('Stranger in a Strange Land', 'Robert A. Heinlein'),
     Book('Foundation', 'Isaac Asimov'),
     Book('Fahrenheit 451', 'Ray Bradbury'),
   ];
 
-  BookRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  BookRouterDelegate({int? selectedBook})
+      : navigatorKey = GlobalKey<NavigatorState>(),
+        _selectedBook = selectedBook != null ? books[selectedBook] : null;
 
   BookRoutePath get currentConfiguration => _selectedBook == null
       ? BookRoutePath.home()
@@ -150,6 +167,9 @@ class BookRoutePath {
   bool get isHomePage => id == null;
 
   bool get isDetailsPage => id != null;
+
+  @override
+  String toString() => 'BookRoutePath(${isHomePage ? 'home' : 'details: $id'})';
 }
 
 class BooksListScreen extends StatelessWidget {
@@ -239,4 +259,17 @@ class NoAnimationTransitionDelegate extends TransitionDelegate<void> {
     }
     return results;
   }
+}
+
+class RestorableBookDelegate
+    extends RestorableChangeNotifier<BookRouterDelegate> {
+  @override
+  BookRouterDelegate createDefaultValue() => BookRouterDelegate();
+
+  @override
+  BookRouterDelegate fromPrimitives(Object? data) =>
+      BookRouterDelegate(selectedBook: data as int?);
+
+  @override
+  Object? toPrimitives() => value.selectedBook;
 }
