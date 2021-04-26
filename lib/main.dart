@@ -85,6 +85,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
       pages: [
         MaterialPage(
           key: ValueKey('BooksListPage'),
+          restorationId: 'book-list-page',
           child: BooksListScreen(
             books: books,
             onTapped: _handleBookTapped,
@@ -125,6 +126,9 @@ class BookDetailsPage extends Page {
   BookDetailsPage({
     required this.book,
   }) : super(key: ValueKey(book));
+
+  @override
+  final String restorationId = 'book-details-page';
 
   Route createRoute(BuildContext context) {
     return MaterialPageRoute(
