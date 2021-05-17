@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -46,14 +47,14 @@ class _BooksAppState extends State<BooksApp> with RestorationMixin {
 class BookRouteInformationParser extends RouteInformationParser<BookRoutePath> {
   @override
   Future<BookRoutePath> parseRouteInformation(
-      RouteInformation routeInformation) async {
+      RouteInformation routeInformation) {
     final uri = Uri.parse(routeInformation.location!);
 
     if (uri.pathSegments.length >= 2) {
       var remaining = uri.pathSegments[1];
-      return BookRoutePath.details(int.tryParse(remaining)!);
+      return SynchronousFuture(BookRoutePath.details(int.tryParse(remaining)!));
     } else {
-      return BookRoutePath.home();
+      return SynchronousFuture(BookRoutePath.home());
     }
   }
 
@@ -125,10 +126,11 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
   }
 
   @override
-  Future<void> setNewRoutePath(BookRoutePath path) async {
+  Future<void> setNewRoutePath(BookRoutePath path) {
     if (path.isDetailsPage) {
       _selectedBook = books[path.id!];
     }
+    return SynchronousFuture<void>(null);
   }
 
   void _handleBookTapped(Book book) {
